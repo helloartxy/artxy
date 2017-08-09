@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 26, 2017 at 05:06 PM
+-- Generation Time: Aug 09, 2017 at 04:45 PM
 -- Server version: 10.1.19-MariaDB
 -- PHP Version: 7.0.13
 
@@ -43,9 +43,18 @@ CREATE TABLE `artxy_user` (
 
 CREATE TABLE `category` (
   `ID` bigint(20) NOT NULL,
-  `cateogry_name` varchar(255) NOT NULL,
-  `category_type_ID` bigint(20) NOT NULL
+  `cateogry_name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `category`
+--
+
+INSERT INTO `category` (`ID`, `cateogry_name`) VALUES
+(3, 'Tools'),
+(4, 'Inspire'),
+(5, 'Learn'),
+(6, 'Events');
 
 -- --------------------------------------------------------
 
@@ -82,18 +91,6 @@ CREATE TABLE `event_post` (
   `end_date` datetime NOT NULL,
   `event_place` varchar(255) NOT NULL,
   `event_category_ID` bigint(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `post_category`
---
-
-CREATE TABLE `post_category` (
-  `ID` bigint(20) NOT NULL,
-  `post_ID` bigint(20) NOT NULL,
-  `category_ID` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -159,6 +156,17 @@ CREATE TABLE `resources_category_post` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `store_category`
+--
+
+CREATE TABLE `store_category` (
+  `ID` bigint(20) NOT NULL,
+  `store_category_name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `store_description`
 --
 
@@ -167,8 +175,34 @@ CREATE TABLE `store_description` (
   `post_ID` bigint(20) NOT NULL,
   `address` text NOT NULL,
   `store_type` enum('Online','Physical','Online and Physical','') NOT NULL,
-  `popular_products` varchar(255) NOT NULL
+  `popular_products` varchar(255) NOT NULL,
+  `store_category_ID` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sub_category`
+--
+
+CREATE TABLE `sub_category` (
+  `ID` bigint(20) NOT NULL,
+  `sub_category_name` varchar(255) NOT NULL,
+  `category_ID` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `sub_category`
+--
+
+INSERT INTO `sub_category` (`ID`, `sub_category_name`, `category_ID`) VALUES
+(1, 'Acrylic/Oil', 3),
+(2, 'Calligraphy', 3),
+(3, 'Acrylic/Oil', 3),
+(4, 'Calligraphy', 3),
+(5, 'Digital Painting', 3),
+(6, 'Watercolor', 3),
+(7, 'Art Stores', 3);
 
 -- --------------------------------------------------------
 
@@ -219,8 +253,17 @@ CREATE TABLE `user_post` (
   `post_title` varchar(255) NOT NULL,
   `post_description` text NOT NULL,
   `post_date` datetime NOT NULL,
-  `category_type_ID` bigint(20) NOT NULL
+  `sub_category_ID` bigint(20) NOT NULL,
+  `category_ID` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `user_post`
+--
+
+INSERT INTO `user_post` (`ID`, `user_ID`, `post_title`, `post_description`, `post_date`, `sub_category_ID`, `category_ID`) VALUES
+(8, 0, 'sample', 'sample', '0000-00-00 00:00:00', 0, 0),
+(9, 0, 'sampl1', 'sample1', '2017-07-30 15:45:51', 0, 0);
 
 --
 -- Indexes for dumped tables
@@ -236,8 +279,7 @@ ALTER TABLE `artxy_user`
 -- Indexes for table `category`
 --
 ALTER TABLE `category`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `category_type_ID` (`category_type_ID`);
+  ADD PRIMARY KEY (`ID`);
 
 --
 -- Indexes for table `category_type`
@@ -256,16 +298,7 @@ ALTER TABLE `event_category`
 --
 ALTER TABLE `event_post`
   ADD PRIMARY KEY (`ID`),
-  ADD KEY `post_ID` (`post_ID`,`event_category_ID`),
-  ADD KEY `event_category_ID` (`event_category_ID`);
-
---
--- Indexes for table `post_category`
---
-ALTER TABLE `post_category`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `post_ID` (`post_ID`,`category_ID`),
-  ADD KEY `category_ID` (`category_ID`);
+  ADD KEY `post_ID` (`post_ID`,`event_category_ID`);
 
 --
 -- Indexes for table `post_images`
@@ -305,11 +338,24 @@ ALTER TABLE `resources_category_post`
   ADD KEY `post_ID_2` (`post_ID`);
 
 --
+-- Indexes for table `store_category`
+--
+ALTER TABLE `store_category`
+  ADD PRIMARY KEY (`ID`);
+
+--
 -- Indexes for table `store_description`
 --
 ALTER TABLE `store_description`
   ADD PRIMARY KEY (`ID`),
   ADD KEY `post_ID` (`post_ID`);
+
+--
+-- Indexes for table `sub_category`
+--
+ALTER TABLE `sub_category`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `category_ID` (`category_ID`);
 
 --
 -- Indexes for table `user_activation_code`
@@ -338,7 +384,10 @@ ALTER TABLE `user_login`
 ALTER TABLE `user_post`
   ADD PRIMARY KEY (`ID`),
   ADD KEY `user_ID` (`user_ID`),
-  ADD KEY `category_type_ID` (`category_type_ID`);
+  ADD KEY `category_type_ID` (`sub_category_ID`),
+  ADD KEY `user_ID_2` (`user_ID`),
+  ADD KEY `user_ID_3` (`user_ID`),
+  ADD KEY `category_ID` (`category_ID`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -353,7 +402,7 @@ ALTER TABLE `artxy_user`
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
-  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT for table `category_type`
 --
@@ -368,11 +417,6 @@ ALTER TABLE `event_category`
 -- AUTO_INCREMENT for table `event_post`
 --
 ALTER TABLE `event_post`
-  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `post_category`
---
-ALTER TABLE `post_category`
   MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `post_images`
@@ -395,10 +439,20 @@ ALTER TABLE `post_primary_image`
 ALTER TABLE `resources_category`
   MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
 --
+-- AUTO_INCREMENT for table `store_category`
+--
+ALTER TABLE `store_category`
+  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
+--
 -- AUTO_INCREMENT for table `store_description`
 --
 ALTER TABLE `store_description`
   MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `sub_category`
+--
+ALTER TABLE `sub_category`
+  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 --
 -- AUTO_INCREMENT for table `user_activation_code`
 --
@@ -418,7 +472,7 @@ ALTER TABLE `user_login`
 -- AUTO_INCREMENT for table `user_post`
 --
 ALTER TABLE `user_post`
-  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 --
 -- Constraints for dumped tables
 --
@@ -430,43 +484,22 @@ ALTER TABLE `artxy_user`
   ADD CONSTRAINT `artxy_user_ibfk_1` FOREIGN KEY (`ID`) REFERENCES `user_activation_code` (`user_ID`);
 
 --
--- Constraints for table `category`
---
-ALTER TABLE `category`
-  ADD CONSTRAINT `category_ibfk_1` FOREIGN KEY (`category_type_ID`) REFERENCES `category_type` (`ID`);
-
---
 -- Constraints for table `event_post`
 --
 ALTER TABLE `event_post`
-  ADD CONSTRAINT `event_post_ibfk_1` FOREIGN KEY (`post_ID`) REFERENCES `user_post` (`ID`),
-  ADD CONSTRAINT `event_post_ibfk_2` FOREIGN KEY (`event_category_ID`) REFERENCES `event_category` (`ID`);
-
---
--- Constraints for table `post_category`
---
-ALTER TABLE `post_category`
-  ADD CONSTRAINT `post_category_ibfk_1` FOREIGN KEY (`post_ID`) REFERENCES `user_post` (`ID`),
-  ADD CONSTRAINT `post_category_ibfk_2` FOREIGN KEY (`category_ID`) REFERENCES `category` (`ID`);
+  ADD CONSTRAINT `event_post_ibfk_1` FOREIGN KEY (`post_ID`) REFERENCES `user_post` (`ID`);
 
 --
 -- Constraints for table `post_like`
 --
 ALTER TABLE `post_like`
-  ADD CONSTRAINT `post_like_ibfk_1` FOREIGN KEY (`post_ID`) REFERENCES `user_post` (`ID`),
-  ADD CONSTRAINT `post_like_ibfk_2` FOREIGN KEY (`profile_ID`) REFERENCES `artxy_user` (`ID`);
+  ADD CONSTRAINT `post_like_ibfk_1` FOREIGN KEY (`profile_ID`) REFERENCES `artxy_user` (`ID`);
 
 --
 -- Constraints for table `resources_category`
 --
 ALTER TABLE `resources_category`
   ADD CONSTRAINT `resources_category_ibfk_1` FOREIGN KEY (`ID`) REFERENCES `resources_category_post` (`resources_category_ID`);
-
---
--- Constraints for table `resources_category_post`
---
-ALTER TABLE `resources_category_post`
-  ADD CONSTRAINT `resources_category_post_ibfk_1` FOREIGN KEY (`post_ID`) REFERENCES `user_post` (`ID`);
 
 --
 -- Constraints for table `store_description`
@@ -485,13 +518,6 @@ ALTER TABLE `user_credentials`
 --
 ALTER TABLE `user_login`
   ADD CONSTRAINT `user_login_ibfk_1` FOREIGN KEY (`ID`) REFERENCES `artxy_user` (`ID`);
-
---
--- Constraints for table `user_post`
---
-ALTER TABLE `user_post`
-  ADD CONSTRAINT `user_post_ibfk_1` FOREIGN KEY (`user_ID`) REFERENCES `artxy_user` (`ID`),
-  ADD CONSTRAINT `user_post_ibfk_2` FOREIGN KEY (`category_type_ID`) REFERENCES `category_type` (`ID`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
