@@ -1,15 +1,3 @@
-<?php 
-include 'class/database.php';
-$dbOut = new Database();
-
-$data = $dbOut->select('sub_category', 'ID, sub_category_name', null ,'category_ID=3');
-// $query = "SELECT ID, sub_category_name FROM sub_category WHERE category_ID='3'";
-// $dbOut->sql($query);
-$data = $dbOut->getResult();
-
-
-
- ?>
 <html>
 
 <head>
@@ -34,8 +22,22 @@ $data = $dbOut->getResult();
             });
             console.log(1);
         });
+
+        displayCategoryToList();
+
     });
 
+
+    //
+    function displayCategoryToList(){
+        $.ajax({
+            url: "functions/getCategory.php",
+            method: "get",
+            success:     function(response){
+                console.log(response);
+            }
+        });
+    }
 </script>
 </head>
 <body></body>
